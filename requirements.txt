@@ -1,0 +1,4 @@
+opencv-python>=4.5.5.64
+ultralytics==8.2.101
+pyttsx3==2.91
+argparse
