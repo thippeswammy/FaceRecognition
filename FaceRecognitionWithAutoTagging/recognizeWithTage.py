@@ -101,7 +101,7 @@ known_encodings.extend(enc1 + enc2)
 known_names.extend(names1 + names2)
 
 # 🔹 Auto Tag Counter (Start from max existing tag)
-auto_tag_counter = 1
+auto_tag_counter = len(os.listdir(AUTO_TAG_DIR)) + 1
 for name in known_names:
     if name.startswith("person"):
         try:

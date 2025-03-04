@@ -30,3 +30,9 @@
 /FaceRecognitionWithAutoTagging/known_faces/SunitaPanda.png
 /FaceRecognitionWithAutoTagging/known_faces/Thippeswamy.png
 /FaceRecognitionWithAutoTagging/known_faces/Venkata.png
+/FaceRecognitionWithAutoTagging/AutoTagKnow/person2.jpg
+/FaceRecognitionWithAutoTagging/AutoTagKnow/person1.jpg
+/yolov8m-face.pt
+/yolov8-face.pt
+/yolov8n-cls.pt
+/yolov8n.pt
