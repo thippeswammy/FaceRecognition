@@ -69,16 +69,17 @@ reset_thread.start()
 KNOWN_FACES_DIR = "known_faces"
 known_encodings = []
 known_names = []
-# list_of_names = ['Richard1', 'Richard', 'RohitBhagat', 'ElenaGaura1', 'ElenaGaura', 'Gitam']
-welcome_messages = {
-    "Richard": "hi Prof. Richard Dashwood wellcome to sdv lab",
-    "Richard1": "hi Prof. Richard Dashwood wellcome to sdv lab",
-    "ElenaGaura": "hi Prof. Elena Gaura wellcome to sdv lab",
-    "ElenaGaura1": "hi Prof. Elena Gaura wellcome to sdv lab",
-    "RohitBhagat": "hi Prof. Rohit Bhagat wellcome to sdv lab",
-    "Ajay": "hi Prof. Ajay Kumar",
-    "Prithvi": "hi Prof. Prithvi Pagala",
-}
+
+
+# Load welcome messages from JSON file
+def load_welcome_messages(filename):
+    with open(filename, 'r') as f:
+        return json.load(f)
+
+
+# Path to the JSON file containing welcome messages
+welcome_messages_file = "welcome_messages.json"
+welcome_messages = load_welcome_messages(welcome_messages_file)
 
 for filename in os.listdir(KNOWN_FACES_DIR):
     image = face_recognition.load_image_file(os.path.join(KNOWN_FACES_DIR, filename))
