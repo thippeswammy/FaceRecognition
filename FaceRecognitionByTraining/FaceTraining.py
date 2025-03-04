@@ -3,7 +3,7 @@ from ultralytics import YOLO
 
 def Train(data_path="", test_name="test1"):
     # Initialize YOLO model
-    model = YOLO("yolov8n-cls.pt")
+    model = YOLO("../yolov8n-cls.pt")
 
     # Train the model with built-in augmentations
     model.train(

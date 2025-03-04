@@ -7,9 +7,7 @@ import time
 import cv2
 import pyttsx3
 
-import FaceDataCollector as dataCollector
-import FaceTesting as tester
-import FaceTraining as trainer
+from FaceRecognitionByTraining import FaceTesting as tester, FaceTraining as trainer, FaceDataCollector as dataCollector
 
 
 class FaceRecognitionSystem:

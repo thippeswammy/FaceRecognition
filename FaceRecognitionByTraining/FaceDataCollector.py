@@ -3,7 +3,7 @@ import os
 import cv2
 from ultralytics import YOLO
 
-from Augmentation import ChangesImage
+from FaceRecognitionByTraining.Augmentation import ChangesImage
 
 DATASET_LOCATION = "CollectedDataset/"
 NumberOfImageSamples = 500
@@ -40,7 +40,7 @@ def FaceDataCollection(file_path, personName, camera):
     NumberOfSpacePress = 0
     face_id = personName
     # width, height = 640, 480
-    face_detector = YOLO('yolov8m-face.pt')
+    face_detector = YOLO('../yolov8m-face.pt')
     fourcc = cv2.VideoWriter_fourcc(*'XVID')  # You can use other codecs like 'XVID' or 'MJPG'
     out = cv2.VideoWriter('output1.avi', fourcc, 20.0, (int(camera.get(3)), int(camera.get(4))))
 

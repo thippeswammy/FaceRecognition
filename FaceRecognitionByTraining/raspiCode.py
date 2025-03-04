@@ -54,7 +54,7 @@ def get_name(result, threshold=0.5):
 
 def FaceRecognition(model_path):
     """Main function for face recognition and LED control."""
-    face_detector = YOLO('yolov8m-face.pt')  # Face detection model
+    face_detector = YOLO('../yolov8m-face.pt')  # Face detection model
     face_classifier = YOLO(model_path)  # Face classification model
 
     camera = cv2.VideoCapture(0)  # Open the default camera

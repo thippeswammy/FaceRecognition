@@ -4,9 +4,7 @@ import sys
 import time
 import shutil
 import random
-import FaceTesting as tester
-import FaceTraining as trainer
-import FaceDataCollector as dataCollector
+from FaceRecognitionByTraining import FaceTesting as tester, FaceTraining as trainer, FaceDataCollector as dataCollector
 
 DATASET_LOCATION = "CollectedDataset/"
 TrainingDataSetForClassification_LOCATION = "TrainingDataSetForClassification/"

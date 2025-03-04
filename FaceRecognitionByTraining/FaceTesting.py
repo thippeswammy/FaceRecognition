@@ -6,11 +6,11 @@ from ultralytics import YOLO
 
 doCommunication = False
 if doCommunication:
-    import communication as com
+    from FaceRecognitionByTraining import communication as com
 
 
 def FaceRecognition(model_path, camera, faster=False):
-    face_detector = YOLO('yolov8m-face.pt')  # Face detection model
+    face_detector = YOLO('../yolov8m-face.pt')  # Face detection model
     face_classifier = YOLO(model_path)  # Face classification model
 
     if not faster:
