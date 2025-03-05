@@ -10,10 +10,23 @@ import numpy as np
 import pyrealsense2 as rs
 import pyttsx3
 
+
+def Config(filename):
+    with open(filename, 'r') as f:
+        return json.load(f)
+
+
 # 🔹 Directories for known and auto-tagged faces
-welcome_messages_file = "welcome_messages.json"
+ConfigFilePath = "ConfigFile.json"
 KNOWN_FACES_DIR = "known_faces"
 AUTO_TAG_DIR = "AutoTagKnow"
+
+# Path to the JSON file containing welcome messages
+data = Config(ConfigFilePath)
+setting = data["settings"]
+message = data["welcome_messages"]
+tolerance = 1 - float(setting["Conf"])
+reset_timing = setting["reset_timing"]
 
 # 🔹 Initialize the Speech Engine
 engine = pyttsx3.init()
@@ -39,7 +52,6 @@ speech_thread.start()
 # 🔹 Speech Control Variables
 list_names_speak = []
 last_face_time = time.time()
-reset_timing = 10
 
 
 def speak(message, name):
@@ -71,16 +83,6 @@ known_names = []
 known_names_only_say = []
 
 
-def load_welcome_messages(filename):
-    with open(filename, 'r') as f:
-        return json.load(f)
-
-
-# Path to the JSON file containing welcome messages
-welcome_messages = load_welcome_messages(welcome_messages_file)
-tolerance = 1 - float(welcome_messages["Conf"])
-
-
 # Function to load faces from a given directory
 def load_faces_from_directory(directory):
     encodings = []
@@ -99,7 +101,7 @@ enc1, names1 = load_faces_from_directory(KNOWN_FACES_DIR)
 enc2, names2 = load_faces_from_directory(AUTO_TAG_DIR)
 for i in names1:
     known_names_only_say.append(names1)
-if welcome_messages["ENABLE_AUTO_TAG"] == "True":
+if setting["ENABLE_AUTO_TAG"] == "True":
     known_encodings.extend(enc1 + enc2)
     known_names.extend(names1 + names2)
 else:
@@ -190,7 +192,7 @@ while True:
             match_index = np.argmin(face_recognition.face_distance(known_encodings, face_encoding))
             name = known_names[match_index]
         else:
-            if depth_value <= 0.4 and welcome_messages["ENABLE_AUTO_TAG"] == "TRUE":
+            if depth_value <= float(setting['DepthCon']) and setting["ENABLE_AUTO_TAG"] == "TRUE":
                 name = f"person{auto_tag_counter}"
                 auto_tag_counter += 1  # Increment counter for next person
                 face_image = color_image[top:bottom, left:right]
@@ -203,8 +205,8 @@ while True:
 
         detected_faces.append((left, top, right, bottom, name, depth_value, face_encoding))
         if not (name == "Unknown" or name[:6] == "person"):
-            if name in welcome_messages:
-                speak(welcome_messages[name], name)
+            if name in message:
+                speak(message[name], name)
             else:
                 speak(f"hi {name}", name)
 
