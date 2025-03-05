@@ -79,7 +79,7 @@ def load_welcome_messages(filename):
 
 
 # Path to the JSON file containing welcome messages
-welcome_messages_file = "welcome_messages.json"
+welcome_messages_file = "ConfigFile.json"
 welcome_messages = load_welcome_messages(welcome_messages_file)
 
 for filename in os.listdir(KNOWN_FACES_DIR):

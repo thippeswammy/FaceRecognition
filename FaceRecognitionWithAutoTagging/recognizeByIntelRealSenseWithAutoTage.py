@@ -17,9 +17,9 @@ def Config(filename):
 
 
 # 🔹 Directories for known and auto-tagged faces
-ConfigFilePath = "ConfigFile.json"
-KNOWN_FACES_DIR = "known_faces"
-AUTO_TAG_DIR = "AutoTagKnow"
+ConfigFilePath = "C:\\PythonExecution\\FaceRecognition\\ConfigFile.json"
+KNOWN_FACES_DIR = "C:\\PythonExecution\\FaceRecognition\\known_faces"
+AUTO_TAG_DIR = "C:\\PythonExecution\\FaceRecognition\\AutoTagKnow"
 
 # Path to the JSON file containing welcome messages
 data = Config(ConfigFilePath)
@@ -36,7 +36,7 @@ speech_lock = threading.Lock()
 speech_queue = queue.Queue()
 
 
-# 🔹 Speech Worker Thread
+# 🔹 Speech Worker T hread
 def speech_worker():
     while True:
         name = speech_queue.get()
@@ -223,9 +223,12 @@ while True:
         cv2.putText(color_image, f"{name} ({depth:.2f}m)", (left, top - 10),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
 
-    cv2.imshow("Auto-Tag Face Recognition", color_image)
-    if cv2.waitKey(1) & 0xFF == ord("q"):
-        break
+    try:
+        cv2.imshow("Auto-Tag Face Recognition", color_image)
+        if cv2.waitKey(1) & 0xFF == ord("q"):
+            break
+    except (FileNotFoundError, json.JSONDecodeError) as e:
+        print("Ended..")
 
 # 🔹 Cleanup
 pipeline.stop()
