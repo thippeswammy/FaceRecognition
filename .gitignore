@@ -36,3 +36,8 @@
 /yolov8-face.pt
 /yolov8n-cls.pt
 /yolov8n.pt
+/FaceRecognitionWithAutoTagging/build/recognizeByIntelRealSenseWithAutoTage/base_library.zip
+/FaceRecognitionWithAutoTagging/known_faces/Kranthi.png
+/FaceRecognitionWithAutoTagging/known_faces/Mohan.png
+/FaceRecognitionWithAutoTagging/recognizeByIntelRealSenseWithAutoTage.spec
+/FaceRecognitionWithAutoTagging/known_faces/Vamsidhar.png

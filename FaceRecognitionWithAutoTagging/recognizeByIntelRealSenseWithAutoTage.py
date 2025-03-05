@@ -1,3 +1,4 @@
+import json
 import os
 import queue
 import threading
@@ -8,6 +9,11 @@ import face_recognition
 import numpy as np
 import pyrealsense2 as rs
 import pyttsx3
+
+# 🔹 Directories for known and auto-tagged faces
+welcome_messages_file = "welcome_messages.json"
+KNOWN_FACES_DIR = "known_faces"
+AUTO_TAG_DIR = "AutoTagKnow"
 
 # 🔹 Initialize the Speech Engine
 engine = pyttsx3.init()
@@ -57,26 +63,58 @@ def reset_speech_list():
 reset_thread = threading.Thread(target=reset_speech_list, daemon=True)
 reset_thread.start()
 
-# 🔹 Directories for known and auto-tagged faces
-KNOWN_FACES_DIR = "known_faces"
-AUTO_TAG_DIR = "AutoTagKnow"
-
 os.makedirs(AUTO_TAG_DIR, exist_ok=True)  # Ensure directory exists
 
 # 🔹 Load known faces
 known_encodings = []
 known_names = []
+known_names_only_say = []
 
-for filename in os.listdir(KNOWN_FACES_DIR):
-    image = face_recognition.load_image_file(os.path.join(KNOWN_FACES_DIR, filename))
-    encodings = face_recognition.face_encodings(image)
-    if encodings:
-        known_encodings.append(encodings[0])
-        known_names.append(os.path.splitext(filename)[0])
+
+def load_welcome_messages(filename):
+    with open(filename, 'r') as f:
+        return json.load(f)
+
+
+# Path to the JSON file containing welcome messages
+welcome_messages = load_welcome_messages(welcome_messages_file)
+tolerance = 1 - float(welcome_messages["Conf"])
+
+
+# Function to load faces from a given directory
+def load_faces_from_directory(directory):
+    encodings = []
+    names = []
+    for filename in os.listdir(directory):
+        image = face_recognition.load_image_file(os.path.join(directory, filename))
+        encodings_list = face_recognition.face_encodings(image)
+        if encodings_list:
+            encodings.append(encodings_list[0])
+            names.append(os.path.splitext(filename)[0])
+    return encodings, names
+
+
+# Load known faces from both directories
+enc1, names1 = load_faces_from_directory(KNOWN_FACES_DIR)
+enc2, names2 = load_faces_from_directory(AUTO_TAG_DIR)
+for i in names1:
+    known_names_only_say.append(names1)
+if welcome_messages["ENABLE_AUTO_TAG"] == "True":
+    known_encodings.extend(enc1 + enc2)
+    known_names.extend(names1 + names2)
+else:
+    known_encodings = enc1
+    known_names = names1
 
 # 🔹 Auto Tag Counter (Start from max existing tag)
-auto_tag_counter = len(os.listdir(AUTO_TAG_DIR)) + 1
-
+auto_tag_counter = 1
+for name in known_names:
+    if name.startswith("person"):
+        try:
+            num = int(name[6:])  # Extract number from "person{number}"
+            auto_tag_counter = max(auto_tag_counter, num + 1)
+        except ValueError:
+            pass  # Ignore invalid names
 print("✅ Face Data Loaded. Starting RealSense...")
 
 # 🔹 Initialize RealSense Camera
@@ -143,31 +181,32 @@ while True:
     detected_faces = []
     for (top, right, bottom, left), face_encoding in zip(face_locations, face_encodings):
         name = "Unknown"
-        matches = face_recognition.compare_faces(known_encodings, face_encoding, 0.6)
+
+        matches = face_recognition.compare_faces(known_encodings, face_encoding, tolerance)
+        center_x, center_y = (left + right) // 2, (top + bottom) // 2
+        depth_value = depth_frame.get_distance(center_x, center_y) if (
+                0 <= center_x < depth_data.shape[1] and 0 <= center_y < depth_data.shape[0]) else -1
         if True in matches:
             match_index = np.argmin(face_recognition.face_distance(known_encodings, face_encoding))
             name = known_names[match_index]
         else:
-            global auto_tag_counter
-            name = f"person{auto_tag_counter}"
-            auto_tag_counter += 1  # Increment counter for next person
-
-            # Save the detected face image
-            face_image = color_image[top:bottom, left:right]
-            if face_image.size > 0:  # Ensure the cropped image is valid
-                save_path = os.path.join(AUTO_TAG_DIR, f"{name}.jpg")
-                cv2.imwrite(save_path, face_image)
-                print(f"✅ New person detected: {name}, saved as {save_path}")
-
-            known_encodings.append(face_encoding)
-            known_names.append(name)
-
-        center_x, center_y = (left + right) // 2, (top + bottom) // 2
-        depth_value = depth_frame.get_distance(center_x, center_y) if (
-                0 <= center_x < depth_data.shape[1] and 0 <= center_y < depth_data.shape[0]) else -1
+            if depth_value <= 0.4 and welcome_messages["ENABLE_AUTO_TAG"] == "TRUE":
+                name = f"person{auto_tag_counter}"
+                auto_tag_counter += 1  # Increment counter for next person
+                face_image = color_image[top:bottom, left:right]
+                if face_image.size > 0:  # Ensure the cropped image is valid
+                    save_path = os.path.join(AUTO_TAG_DIR, f"{name}.jpg")
+                    cv2.imwrite(save_path, face_image)
+                    print(f"✅ New person detected: {name}, saved as {save_path}")
+                    known_encodings.append(face_encoding)
+                    known_names.append(name)
 
         detected_faces.append((left, top, right, bottom, name, depth_value, face_encoding))
-        speak(f"Hello, {name}!", name)
+        if not (name == "Unknown" or name[:6] == "person"):
+            if name in welcome_messages:
+                speak(welcome_messages[name], name)
+            else:
+                speak(f"hi {name}", name)
 
     for i, (left, top, right, bottom, name, depth, encoding) in enumerate(detected_faces):
         if len(prev_faces) < len(detected_faces):
