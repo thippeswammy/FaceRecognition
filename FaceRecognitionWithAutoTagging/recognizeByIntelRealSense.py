@@ -10,7 +10,7 @@ import numpy as np
 import pyrealsense2 as rs
 import pyttsx3
 
-# 🔹 Initialize the Speech Engine
+#   Initialize the Speech Engine
 engine = pyttsx3.init()
 engine.setProperty("rate", 150)  # Speech speed
 
@@ -18,7 +18,7 @@ speech_lock = threading.Lock()
 speech_queue = queue.Queue()
 
 
-# 🔹 Speech Worker Thread
+#   Speech Worker Thread
 
 def speech_worker():
     while True:
@@ -39,7 +39,7 @@ last_face_time = time.time()  # Track last time a face was detected
 reset_timing = 10  # Reset spoken names after X seconds
 
 
-# 🔹 Function to Speak Name with Control
+#   Function to Speak Name with Control
 
 def speak(message, name):
     with speech_lock:
@@ -48,7 +48,7 @@ def speak(message, name):
             speech_queue.put(message)  # Add name to queue for speech processing
 
 
-# 🔹 Function to Reset Spoken Names
+#   Function to Reset Spoken Names
 
 def reset_speech_list():
     global last_face_time, list_names_speak
@@ -65,7 +65,7 @@ def reset_speech_list():
 reset_thread = threading.Thread(target=reset_speech_list, daemon=True)
 reset_thread.start()
 
-# 🔹 Load Known Faces
+#   Load Known Faces
 
 KNOWN_FACES_DIR = "known_faces"
 known_encodings = []
@@ -89,9 +89,9 @@ for filename in os.listdir(KNOWN_FACES_DIR):
         known_encodings.append(encodings[0])
         known_names.append(os.path.splitext(filename)[0])
 
-print("✅ Face Data Loaded. Starting RealSense...")
+print("Face Data Loaded. Starting RealSense...")
 
-# 🔹 Initialize RealSense Camera
+#   Initialize RealSense Camera
 
 pipeline = rs.pipeline()
 config = rs.config()
@@ -104,7 +104,7 @@ frames_lock = threading.Lock()
 color_frame, depth_frame = None, None
 
 
-# 🔹 Capture Frames Thread
+#   Capture Frames Thread
 
 def capture_frames():
     global color_frame, depth_frame
@@ -120,7 +120,7 @@ capture_thread = threading.Thread(target=capture_frames, daemon=True)
 capture_thread.start()
 
 
-# 🔹 Kalman Filter for Face Tracking
+#   Kalman Filter for Face Tracking
 
 class KalmanFilter:
     def __init__(self, x, y):
@@ -137,7 +137,7 @@ class KalmanFilter:
         self.kf.correct(np.array([[x], [y]], np.float32))
 
 
-# 🔹 Face Recognition Loop
+#   Face Recognition Loop
 
 prev_faces = []
 prev_encodings = []
@@ -192,10 +192,10 @@ while True:
     if cv2.waitKey(1) & 0xFF == ord("q"):
         break
 
-# 🔹 Cleanup
+#   Cleanup
 
 pipeline.stop()
 speech_queue.put(None)  # Stop speech worker
 speech_thread.join()
 cv2.destroyAllWindows()
-print("\n✅ Face Tracking Completed!")
+print("\n  Face Tracking Completed!")
