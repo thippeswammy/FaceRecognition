@@ -1,17 +1,19 @@
 {
   "welcome_messages": {
-    "Richard": "Hi Prof. Richard Dashwood, welcome to SDV Lab!",
-    "Richard1": "Hi Prof. Richard Dashwood, welcome to SDV Lab!",
-    "ElenaGaura": "Hi Prof. Elena Gaura, welcome to SDV Lab!",
-    "ElenaGaura1": "Hi Prof. Elena Gaura, welcome to SDV Lab!",
-    "RohitBhagat": "Hi Prof. Rohit Bhagat, welcome to SDV Lab!",
-    "KNSAcharya": "Hi Prof. KNS Acharya, welcome!",
-    "KNSAcharya1": "Hi Prof. KNS Acharya, welcome!",
-    "Prithvi": "Hi Prof. Prithvi Pagala, welcome!"
+    "David1": "Hi Prof. David M",
+    "David2": "Hi Prof. David M",
+    "David3": "Hi Prof. David M",
+    "David4": "Hi Prof. David M",
+    "Vahid1": "Hi Prof. Vahid Motevalli",
+    "Vahid2": "Hi Prof. Vahid Motevalli",
+    "KNSAcharya": "Hi Prof. KNS Acharya",
+    "KNSAcharya1": "Hi Prof. KNS Acharya!",
+    "Prithvi": "Hi Prof. Prithvi Pagala",
+    "AjayKumar" : "Ajay Kumar"
   },
   "settings": {
     "Conf": "0.4",
-    "DepthCon": "0.4",
+    "DepthCon": "0.5",
     "reset_timing": 10,
     "ENABLE_AUTO_TAG": "True"
   }

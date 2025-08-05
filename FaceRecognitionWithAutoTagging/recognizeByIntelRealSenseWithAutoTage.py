@@ -4,8 +4,8 @@ import queue
 import threading
 import time
 
-import cv2
 import face_recognition
+import cv2
 import numpy as np
 import pyrealsense2 as rs
 import pyttsx3
@@ -17,9 +17,9 @@ def Config(filename):
 
 
 # 🔹 Directories for known and auto-tagged faces
-ConfigFilePath = "C:\\PythonExecution\\FaceRecognition\\ConfigFile.json"
-KNOWN_FACES_DIR = "C:\\PythonExecution\\FaceRecognition\\known_faces"
-AUTO_TAG_DIR = "C:\\PythonExecution\\FaceRecognition\\AutoTagKnow"
+ConfigFilePath = 'ConfigFile.json'
+KNOWN_FACES_DIR = "known_faces"
+AUTO_TAG_DIR = "AutoTagKnow"
 
 # Path to the JSON file containing welcome messages
 data = Config(ConfigFilePath)
