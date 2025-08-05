@@ -4,8 +4,8 @@ import queue
 import threading
 import time
 
-import face_recognition
 import cv2
+import face_recognition
 import numpy as np
 import pyrealsense2 as rs
 import pyttsx3
@@ -16,7 +16,7 @@ def Config(filename):
         return json.load(f)
 
 
-# 🔹 Directories for known and auto-tagged faces
+#  Directories for known and auto-tagged faces
 ConfigFilePath = 'ConfigFile.json'
 KNOWN_FACES_DIR = "known_faces"
 AUTO_TAG_DIR = "AutoTagKnow"
@@ -28,7 +28,7 @@ message = data["welcome_messages"]
 tolerance = 1 - float(setting["Conf"])
 reset_timing = setting["reset_timing"]
 
-# 🔹 Initialize the Speech Engine
+#  Initialize the Speech Engine
 engine = pyttsx3.init()
 engine.setProperty("rate", 150)  # Speech speed
 
@@ -36,7 +36,7 @@ speech_lock = threading.Lock()
 speech_queue = queue.Queue()
 
 
-# 🔹 Speech Worker T hread
+#  Speech Worker T hread
 def speech_worker():
     while True:
         name = speech_queue.get()
@@ -49,7 +49,7 @@ def speech_worker():
 speech_thread = threading.Thread(target=speech_worker, daemon=True)
 speech_thread.start()
 
-# 🔹 Speech Control Variables
+#  Speech Control Variables
 list_names_speak = []
 last_face_time = time.time()
 
@@ -77,7 +77,7 @@ reset_thread.start()
 
 os.makedirs(AUTO_TAG_DIR, exist_ok=True)  # Ensure directory exists
 
-# 🔹 Load known faces
+#  Load known faces
 known_encodings = []
 known_names = []
 known_names_only_say = []
@@ -108,7 +108,7 @@ else:
     known_encodings = enc1
     known_names = names1
 
-# 🔹 Auto Tag Counter (Start from max existing tag)
+#  Auto Tag Counter (Start from max existing tag)
 auto_tag_counter = 1
 for name in known_names:
     if name.startswith("person"):
@@ -117,9 +117,9 @@ for name in known_names:
             auto_tag_counter = max(auto_tag_counter, num + 1)
         except ValueError:
             pass  # Ignore invalid names
-print("✅ Face Data Loaded. Starting RealSense...")
+print(" Face Data Loaded. Starting RealSense...")
 
-# 🔹 Initialize RealSense Camera
+#  Initialize RealSense Camera
 pipeline = rs.pipeline()
 config = rs.config()
 config.enable_stream(rs.stream.color, 1280, 720, rs.format.bgr8, 30)
@@ -131,7 +131,7 @@ frames_lock = threading.Lock()
 color_frame, depth_frame = None, None
 
 
-# 🔹 Capture Frames Thread
+#  Capture Frames Thread
 def capture_frames():
     global color_frame, depth_frame
     while True:
@@ -146,7 +146,7 @@ capture_thread = threading.Thread(target=capture_frames, daemon=True)
 capture_thread.start()
 
 
-# 🔹 Kalman Filter for Face Tracking
+#  Kalman Filter for Face Tracking
 class KalmanFilter:
     def __init__(self, x, y):
         self.kf = cv2.KalmanFilter(4, 2)
@@ -162,7 +162,7 @@ class KalmanFilter:
         self.kf.correct(np.array([[x], [y]], np.float32))
 
 
-# 🔹 Face Recognition Loop
+#  Face Recognition Loop
 prev_faces = []
 prev_encodings = []
 
@@ -199,7 +199,7 @@ while True:
                 if face_image.size > 0:  # Ensure the cropped image is valid
                     save_path = os.path.join(AUTO_TAG_DIR, f"{name}.jpg")
                     cv2.imwrite(save_path, face_image)
-                    print(f"✅ New person detected: {name}, saved as {save_path}")
+                    print(f" New person detected: {name}, saved as {save_path}")
                     known_encodings.append(face_encoding)
                     known_names.append(name)
 
@@ -230,9 +230,9 @@ while True:
     except (FileNotFoundError, json.JSONDecodeError) as e:
         print("Ended..")
 
-# 🔹 Cleanup
+#  Cleanup
 pipeline.stop()
 speech_queue.put(None)
 speech_thread.join()
 cv2.destroyAllWindows()
-print("\n✅ Face Tracking Completed!")
+print("\n Face Tracking Completed!")
